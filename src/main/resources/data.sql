@@ -1,0 +1,1 @@
+INSERT INTO hashtag values (1, 'default');
