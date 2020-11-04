@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,6 +104,15 @@ public class LoggerController {
                 .collect(Collectors.toList());
         logExposure.setHashtags(hastags);
         return logExposure;
+    }
+
+    @GetMapping("/{logId}")
+    LogExposure logDetails(@PathVariable Long logId) {
+        Optional<Logger> byId = loggerRepository.findById(logId);
+        if (!byId.isPresent()) {
+            throw new ResourceNotFoundException("Log not found");
+        }
+        return toLogExposure(byId.get());
     }
 
 }

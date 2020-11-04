@@ -123,4 +123,35 @@ class LoggerControllerTest {
         Assertions.assertThat(list.getLogs().size()).isGreaterThan(0);
     }
 
+    @Test
+    void logDetails_whenNotFound_exceptionThrow() {
+        VndErrors vndErrors = given()
+                .when()
+                .contentType(CONTENT_TYPE)
+                .get("/logs/20")
+                .prettyPeek()
+                .then()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .contentType(APPLICATION_VND_ERROR_JSON)
+                .extract()
+                .as(VndErrors.class);
+        assertErrorResponse(vndErrors,
+                "Log not found");
+    }
+
+    @Test
+    void logDetails_whenFound_shouldSendResult() {
+        LogExposure list = given()
+                .when()
+                .contentType(CONTENT_TYPE)
+                .get("/logs/1")
+                .prettyPeek()
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .contentType(CONTENT_TYPE)
+                .extract()
+                .as(LogExposure.class);
+        Assertions.assertThat(list.getHashtags()).contains("#users", "#commands");
+    }
+
 }
