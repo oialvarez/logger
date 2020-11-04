@@ -6,7 +6,8 @@ import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
 @Data
-public class LogCreateRequest {
+public class LogExposure {
+    private Long id;
     @URL(message = "Invalid host")
     private String host;
     @NotEmpty(message = "Origin is required")

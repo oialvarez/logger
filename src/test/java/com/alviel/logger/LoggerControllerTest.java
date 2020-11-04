@@ -4,16 +4,13 @@ import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.http.HttpStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.hateoas.mediatype.vnderrors.VndErrors;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,7 +53,7 @@ class LoggerControllerTest {
 
     @Test
     void create_noHastagFound_shouldAddIt() {
-        Logger newLog = given()
+        LogExposure newLog = given()
                 .when()
                 .body(givenLogger("#newhashtag"))
                 .contentType(CONTENT_TYPE)
@@ -66,13 +63,13 @@ class LoggerControllerTest {
                 .statusCode(HttpStatus.SC_OK)
                 .contentType(CONTENT_TYPE)
                 .extract()
-                .as(Logger.class);
-        Assertions.assertThat(newLog.getHashtags().get(0).getId()).isEqualTo(NEW_HASHTAG_ID);
+                .as(LogExposure.class);
+        Assertions.assertThat(newLog.getHashtags().get(0)).isEqualTo("#newhashtag");
     }
 
     @Test
     void create_hashtagFound_shouldReuseIt() {
-        Logger newLog = given()
+        LogExposure newLog = given()
                 .when()
                 .body(givenLogger("#users"))
                 .contentType(CONTENT_TYPE)
@@ -82,12 +79,12 @@ class LoggerControllerTest {
                 .statusCode(HttpStatus.SC_OK)
                 .contentType(CONTENT_TYPE)
                 .extract()
-                .as(Logger.class);
-        Assertions.assertThat(newLog.getHashtags().get(0).getId()).isEqualTo(EXISTING_HASHTAG_ID);
+                .as(LogExposure.class);
+        Assertions.assertThat(newLog.getHashtags().get(0)).isEqualTo("#users");
     }
 
-    private LogCreateRequest givenLogger(String hashtag) {
-        LogCreateRequest request = new LogCreateRequest();
+    private LogExposure givenLogger(String hashtag) {
+        LogExposure request = new LogExposure();
         request.setHost("http://host");
         request.setOrigin("origin");
         request.setDetails("details");
@@ -98,8 +95,8 @@ class LoggerControllerTest {
         return request;
     }
 
-    private LogCreateRequest givenLoggerWithoutAttributes() {
-        return new LogCreateRequest();
+    private LogExposure givenLoggerWithoutAttributes() {
+        return new LogExposure();
     }
 
     private void assertErrorResponse(VndErrors vndErrors, String... expectedMessage) {
@@ -110,4 +107,20 @@ class LoggerControllerTest {
                 .extracting("message")
                 .containsOnlyElementsOf(Arrays.asList(expectedMessage));
     }
+
+    @Test
+    void list_whenFound_shouldSendResult() {
+        LogList list = given()
+                .when()
+                .contentType(CONTENT_TYPE)
+                .get("/logs")
+                .prettyPeek()
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .contentType(CONTENT_TYPE)
+                .extract()
+                .as(LogList.class);
+        Assertions.assertThat(list.getLogs().size()).isGreaterThan(0);
+    }
+
 }
