@@ -2,7 +2,7 @@ package com.alviel.logger;
 
 import java.util.Objects;
 import java.util.Optional;
-import lombok.NonNull;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +19,7 @@ public class HashtagController {
 
     @PutMapping("/{hashtagId}")
     Hashtag update(@PathVariable Long hashtagId,
-                   @NonNull @RequestBody Hashtag hashtag) {
+                   @NotNull @RequestBody Hashtag hashtag) {
         if (!Objects.equals(hashtagId, hashtag.getId())) {
             throw new BadRequestException("Ambiguous hashtagId");
         }
