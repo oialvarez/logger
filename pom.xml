@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.alviel</groupId>
     <artifactId>logger</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
     <name>logger</name>
     <description>Logger service</description>
 
